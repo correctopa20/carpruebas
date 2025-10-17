@@ -1,14 +1,17 @@
-// src/hooks/useAuth.js
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import jwtDecode from "jwt-decode";
+import { useState, useEffect } from "react";
+import { getRole } from "../services/auth";
 
-export function useAuth(requiredRole) {
-  const navigate = useNavigate();
+export const useAuth = () => {
+  const [role, setRole] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return navigate("/login");
-    const user = jwtDecode(token);
-    if (requiredRole && user.rol !== requiredRole) navigate("/no-autorizado");
-  }, [navigate, requiredRole]);
-}
+    const storedRole = getRole();
+    if (storedRole) {
+      setRole(storedRole);
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  return { role, isAuthenticated };
+};

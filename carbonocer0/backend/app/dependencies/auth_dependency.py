@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from app.core.config import settings
-from carbonocer0.backend.app.database import SessionLocal
+from app.database import SessionLocal
 from app.models.user_model import User
 
 # Define el esquema Bearer para el botón “Authorize”

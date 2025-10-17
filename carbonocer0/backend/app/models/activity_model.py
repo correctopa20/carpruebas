@@ -1,16 +1,27 @@
-from sqlalchemy import Column, Integer, String, Float
+# app/models/activity_model.py
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
+from datetime import datetime
 from app.database import Base
 
 class Activity(Base):
     __tablename__ = "activities"
 
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String(100), unique=True, nullable=False)
-    categoria = Column(String(50), nullable=False)
-    unidad = Column(String(50), nullable=False)  # Ej: "km", "kWh", "kg", etc.
-    factor_emision = Column(Float, nullable=False)  # kg CO2e por unidad
-      # Relación uno a uno o uno a muchos con emisiones
-    emission = relationship("Emission", back_populates="activity", uselist=False)
+    tipo = Column(String, nullable=False)
+    descripcion = Column(String, nullable=True)
+    cantidad = Column(Float, nullable=False)
+    unidad = Column(String, nullable=False)
+    total_emision = Column(Float, nullable=False)
+    fecha = Column(DateTime, default=datetime.utcnow)
+
+    # 🔗 Relaciones
+    user_id = Column(Integer, ForeignKey("users.id"))
+    emission_factor_id = Column(Integer, ForeignKey("emission_factors.id"))  # 👈 Nuevo
+
+    # Relaciones inversas
+    user = relationship("User", back_populates="activities")
+    emission_factor = relationship("EmissionFactor", back_populates="activities")
+
     def __repr__(self):
-        return f"<Activity(nombre={self.nombre}, categoria={self.categoria})>"
+        return f"<Activity(tipo={self.tipo}, cantidad={self.cantidad}, total_emision={self.total_emision})>"

@@ -11,9 +11,7 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
-    role = Column(String, default="empleado")  # 👈 ESTA LÍNEA ES IMPORTANTE
-    emisiones = relationship("EmissionRecord", back_populates="user", cascade="all, delete")
-    activities = relationship("Activity", back_populates="user")
-    emissions = relationship("Emission", back_populates="user")
-from app.models import emission_model
-from app.models import activity_model
+    role = Column(String, default="empleado")  # 👈 Roles: admin / empleado
+
+    # Relaciones
+    activities = relationship("Activity", back_populates="user", cascade="all, delete")

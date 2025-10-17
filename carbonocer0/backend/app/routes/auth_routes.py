@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends, Request, status
 from pydantic import BaseModel, EmailStr
 from app.models.user_model import User
 from app.database import SessionLocal
-from app.dependencies.roles_dependency import admin_required, empleado_required
+from app.dependencies.roles_dependency import admin_required, empleado_required, get_current_user
 from app.core.auth import create_access_token, verify_password, get_password_hash, verify_token
 
 router = APIRouter(
@@ -98,6 +98,7 @@ def get_current_user(request: Request):
     if not payload:
         raise HTTPException(status_code=401, detail="Token inválido o expirado")
     return payload
+
 
 
 # 🟦 PERFIL DEL USUARIO ACTUAL

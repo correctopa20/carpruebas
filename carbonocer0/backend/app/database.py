@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
+
 # Cargar la URL de la base de datos desde el archivo .env
 DATABASE_URL = settings.DATABASE_URL
 

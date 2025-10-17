@@ -1,23 +1,29 @@
-import { useState } from "react";
-import API from "../services/api";
-
 export default function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleLogin = async () => {
-    const res = await API.post("/login", { username, password });
-    localStorage.setItem("token", res.data.access_token);
-    localStorage.setItem("is_admin", res.data.is_admin);
-    window.location.href = res.data.is_admin ? "/admin" : "/empleado";
+  const handleLogin = (role) => {
+    localStorage.setItem("role", role);
+    window.location.reload();
   };
 
   return (
-    <div className="flex flex-col items-center mt-40">
-      <h2 className="text-xl mb-4">Iniciar Sesión</h2>
-      <input placeholder="Usuario" value={username} onChange={e => setUsername(e.target.value)} />
-      <input placeholder="Contraseña" type="password" value={password} onChange={e => setPassword(e.target.value)} />
-      <button onClick={handleLogin}>Entrar</button>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-verdeOscuro text-white text-center">
+      <h1 className="text-5xl font-display mb-8">🌱 Carbono Cer0</h1>
+      <p className="text-lg mb-6 opacity-90">
+        Ingresa según tu rol para comenzar.
+      </p>
+      <div className="space-x-6">
+        <button
+          onClick={() => handleLogin("admin")}
+          className="bg-verdeClaro text-gris px-6 py-3 rounded-lg font-bold hover:bg-green-500 transition"
+        >
+          Ingresar como Admin
+        </button>
+        <button
+          onClick={() => handleLogin("empleado")}
+          className="bg-green-600 px-6 py-3 rounded-lg hover:bg-green-700 transition"
+        >
+          Ingresar como Empleado
+        </button>
+      </div>
     </div>
   );
 }

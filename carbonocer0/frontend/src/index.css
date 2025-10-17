@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@reference "tailwindcss";
+
+/* === Paleta Carbono Cer0 === */
+@theme {
+  --color-verdeOscuro: #0b3d2e;
+  --color-verdeMedio: #1e5631;
+  --color-verdeClaro: #90be6d;
+  --color-beige: #f4f1de;
+  --color-arena: #fafaf7;
+  --color-gris: #374151;
+}
+
+/* === Estilos globales === */
+body {
+  @apply bg-[--color-verdeOscuro] text-[--color-gris] font-sans;
+}
+
+h1, h2, h3 {
+  @apply text-[--color-verdeOscuro] font-bold;
+}
+
+button {
+  @apply font-semibold rounded-lg transition;
+}
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-arena);
+  }
+}

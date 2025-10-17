@@ -1,11 +1,15 @@
-// src/services/auth.js
-export async function login(email, password) {
-  const res = await fetch("http://localhost:8000/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
-  const data = await res.json();
-  if (res.ok) localStorage.setItem("token", data.access_token);
-  return data;
-}
+import api from "./api";
+
+export const login = async (username, password) => {
+  const res = await api.post("/auth/login", { username, password });
+  localStorage.setItem("token", res.data.access_token);
+  localStorage.setItem("role", res.data.role);  // 👈 Guardamos el rol
+  return res.data;
+};
+
+export const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+};
+
+export const getRole = () => localStorage.getItem("role");
