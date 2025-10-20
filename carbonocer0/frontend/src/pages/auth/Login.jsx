@@ -28,9 +28,9 @@ export default function Login() {
         // ✅ Usar navigate en lugar de window.location.href
       setTimeout(() => {
         if (role === "admin") {
-          navigate("/admin/dashboard");
+          navigate("/admin/InicioAdmin");
         } else {
-          navigate("/dashboard");
+          navigate("/usuario/");
         }
       },100);
       }

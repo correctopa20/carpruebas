@@ -7,7 +7,6 @@ from app.core.auth import create_access_token, verify_password, get_password_has
 from app.schemas.auth_schema import LoginSchema
 
 router = APIRouter(
-    prefix="/auth",
     tags=["Autenticación"]
 )
 
