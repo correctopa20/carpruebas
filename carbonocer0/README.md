@@ -23,7 +23,13 @@ Antes de ejecutar el backend, asegúrate de tener instalado:
    cd carbonocer0/backend
 python -m venv venv
 venv\Scripts\activate    # En Windows
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser--por si esta bloqueado por politicas de seguridad el powersheel con el windows--
+
 source venv/bin/activate # En Linux/Mac
+
+---frontend---
+npm run dev
+npm install react-router-dom react-icons lucide-react prop-types axios tailwindcss postcss autoprefixer chart.js react-chartjs-2 jspdf jspdf-autotable
 
 pip install -r requirements.txt
 

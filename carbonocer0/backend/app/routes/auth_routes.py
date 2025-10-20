@@ -4,6 +4,7 @@ from app.models.user_model import User
 from app.database import SessionLocal
 from app.dependencies.roles_dependency import admin_required, empleado_required, get_current_user
 from app.core.auth import create_access_token, verify_password, get_password_hash, verify_token
+from app.schemas.auth_schema import LoginSchema
 
 router = APIRouter(
     prefix="/auth",

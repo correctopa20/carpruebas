@@ -7,7 +7,8 @@ from app.routes import (
     activity_routes,
     emission_factor_routes,
     report_routes,
-    employee_routes
+    employee_routes,
+    recomendation_routes
 )
 from app.database import Base, engine
 
@@ -20,23 +21,29 @@ app = FastAPI(
 
 # 🔧 Crear tablas
 Base.metadata.create_all(bind=engine)
-
+origins = [
+    "http://localhost:5173",  # Vite/React
+    "http://127.0.0.1:5173",
+    "http://localhost:8000",  # Swagger
+    "http://127.0.0.1:8000",
+]
 # 🟢 CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # 🧱 Incluir rutas
-app.include_router(auth_routes.router, prefix="/auth")
+app.include_router(auth_routes.router)
 app.include_router(admin_routes.router)
 app.include_router(activity_routes.router)
 app.include_router(emission_factor_routes.router)
 app.include_router(report_routes.router)
 app.include_router(employee_routes.router)
+app.include_router(recomendation_routes.router)
 # 🧩 Configuración OpenAPI (para JWT persistente)
 def custom_openapi():
     if app.openapi_schema:
