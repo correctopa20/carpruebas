@@ -37,7 +37,7 @@ app.add_middleware(
 )
 
 # 🧱 Incluir rutas
-app.include_router(auth_routes.router)
+app.include_router(auth_routes.router, prefix="/auth")
 app.include_router(admin_routes.router)
 app.include_router(activity_routes.router)
 app.include_router(emission_factor_routes.router)

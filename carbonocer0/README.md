@@ -25,7 +25,7 @@ python -m venv venv
 venv\Scripts\activate    # En Windows
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser--por si esta bloqueado por politicas de seguridad el powersheel con el windows--
 
-source venv/bin/activate # En Linux/Mac
+source venv/bin/activate # En Linux/Mac o bash
 
 ---frontend---
 npm run dev

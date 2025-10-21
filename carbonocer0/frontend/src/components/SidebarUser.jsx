@@ -10,8 +10,9 @@ import {
   BarChart2,
   Settings,
 } from "lucide-react";
+import PropTypes from "prop-types"; // ✅ <-- AGREGA ESTO
 
-export default function SidebarUser() {
+export default function SidebarUser({ links }) { // ✅ además agrega links como prop
   const navigate = useNavigate();
 
   const handleLogout = () => {
