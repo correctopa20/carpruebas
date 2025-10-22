@@ -8,6 +8,7 @@ import AdminRecommendations from "../pages/Admin/AdminRecommendations";
 import ReportesAdmin from "../pages/Admin/ReportesAdmin";
 import ConfiguracionAdmin from "../pages/Admin/ConfiguracionAdmin";
 import InicioAdmin from "../pages/Admin/InicioAdmin";
+import AdminPreguntas from "../pages/Admin/AdminPreguntas";
 
 export default function AdminRoutes() {
   return (
@@ -20,6 +21,7 @@ export default function AdminRoutes() {
         }
       >
         <Route path="inicio" element={<InicioAdmin />} />
+        <Route path="preguntas" element={<AdminPreguntas />} />
         <Route path="dashboard" element={<DashboardAdmin />} />
         <Route path="empleados" element={<EmpleadosAdmin />} />
         <Route path="actividades" element={<ActividadesAdmin />} />

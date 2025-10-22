@@ -7,11 +7,12 @@ class EmissionFactor(Base):
     __tablename__ = "emission_factors"
 
     id = Column(Integer, primary_key=True, index=True)
-    tipo = Column(String, unique=True, index=True, nullable=False)
-    unidad = Column(String, nullable=False)
-    factor_emision = Column(Float, nullable=False)
+    category = Column(String, nullable=False)     # Ej: "Transporte", "Energía"
+    name = Column(String, nullable=False)         # Ej: "Gasolina", "Electricidad"
+    value = Column(Float, nullable=False)         # kg CO₂ por unidad (kWh, litro, etc.)
+    unit = Column(String, nullable=False)         # Ej: "kWh", "litro"
 
-    # Relación inversa con Activity
+    questions = relationship("Question", back_populates="emission_factor")
     activities = relationship("Activity", back_populates="emission_factor")
 
     def __repr__(self):

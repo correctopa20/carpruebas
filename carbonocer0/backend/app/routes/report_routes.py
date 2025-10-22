@@ -5,11 +5,10 @@ from app.database import get_db
 from app.models.user_model import User
 from app.models.activity_model import Activity
 from app.dependencies.roles_dependency import admin_required
-from app.models.emission_factor_model import EmissionFactor
 
 router = APIRouter(prefix="/reports", tags=["Reports"])
 
-# 🧾 Reporte general de todos los usuarios
+# 🧾 Reporte general (solo admin)
 @router.get("/usuarios", dependencies=[Depends(admin_required)])
 def get_all_users_emissions(db: Session = Depends(get_db)):
     results = (
@@ -32,16 +31,13 @@ def get_all_users_emissions(db: Session = Depends(get_db)):
         for r in results
     ]
 
-
-# 🔍 Reporte detallado por usuario (actividades + total desde BD)
+# 🔍 Reporte detallado (solo admin)
 @router.get("/usuario/{user_id}", dependencies=[Depends(admin_required)])
 def get_user_emission_detail(user_id: int, db: Session = Depends(get_db)):
-    # Buscar usuario
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    # Traer actividades del usuario
     actividades = (
         db.query(Activity)
         .filter(Activity.user_id == user_id)
@@ -49,7 +45,6 @@ def get_user_emission_detail(user_id: int, db: Session = Depends(get_db)):
         .all()
     )
 
-    # Obtener el total de emisiones directamente desde la BD
     total_emision = (
         db.query(func.coalesce(func.sum(Activity.total_emision), 0))
         .filter(Activity.user_id == user_id)

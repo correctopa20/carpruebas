@@ -1,18 +1,15 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { FaSignOutAlt } from "react-icons/fa";
 import {
-  LogOut,
   Home,
   LayoutDashboard,
-  Users,
-  Activity,
   ClipboardList,
   BarChart2,
-  Settings,
+  LogOut,
 } from "lucide-react";
-import PropTypes from "prop-types"; // ✅ <-- AGREGA ESTO
+import PropTypes from "prop-types";
 
-export default function SidebarUser({ links }) { // ✅ además agrega links como prop
+export default function SidebarUser({ links }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -21,12 +18,22 @@ export default function SidebarUser({ links }) { // ✅ además agrega links com
     navigate("/login");
   };
 
+  // ✅ Enlaces por defecto si no se pasan como prop
+  const defaultLinks = [
+    { label: "Dashboard", icon: Home, path: "/user/dashboard" },
+    { label: "Mi Huella", icon: BarChart2, path: "/user/mi-huella" },
+    { label: "Encuesta Huella", icon: ClipboardList, path: "/user/encuesta" },
+  ];
+
+  const menuLinks = links && links.length > 0 ? links : defaultLinks;
+
   return (
     <aside className="w-64 bg-[--color-verde-oscuro] text-white flex flex-col justify-between shadow-lg">
       <nav className="p-4">
         <h2 className="text-xl font-bold mb-6 text-center">CarbonoCer0 🌱</h2>
+
         <ul className="space-y-3">
-          {links.map(({ label, icon: Icon, path }) => (
+          {menuLinks.map(({ label, icon: Icon, path }) => (
             <li key={path}>
               <NavLink
                 to={path}
@@ -59,5 +66,5 @@ export default function SidebarUser({ links }) { // ✅ además agrega links com
 }
 
 SidebarUser.propTypes = {
-  links: PropTypes.array.isRequired,
+  links: PropTypes.array,
 };

@@ -4,6 +4,7 @@ import { useAuth } from "./hooks/useAuth";
 import Login from "./pages/auth/Login";
 import AdminRoutes from "./routes/AdminRoutes";
 import UserRoutes from "./routes/UserRoutes";
+import EncuestaHuella from "./components/EncuestaHuella";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -52,7 +53,15 @@ function App() {
           </ProtectedRoute>
         }
       />
-
+      {/* Nueva ruta para la encuesta */}
+      <Route
+        path="/user/encuesta"
+        element={
+          <ProtectedRoute>
+            <EncuestaHuella />
+          </ProtectedRoute>
+        }
+      />
       {/* ✅ Redirección por defecto */}
       <Route
         path="*"
