@@ -15,7 +15,7 @@ def get_all_users_emissions(db: Session = Depends(get_db)):
         db.query(
             User.id,
             User.username,
-            func.coalesce(func.sum(Activity.total_emision), 0).label("total_emision")
+            func.coalesce(func.sum(Activity.emissions), 0).label("total_emision")
         )
         .outerjoin(Activity, User.id == Activity.user_id)
         .group_by(User.id)
@@ -46,7 +46,7 @@ def get_user_emission_detail(user_id: int, db: Session = Depends(get_db)):
     )
 
     total_emision = (
-        db.query(func.coalesce(func.sum(Activity.total_emision), 0))
+        db.query(func.coalesce(func.sum(Activity.emissions), 0))
         .filter(Activity.user_id == user_id)
         .scalar()
     )
@@ -61,12 +61,12 @@ def get_user_emission_detail(user_id: int, db: Session = Depends(get_db)):
         "actividades": [
             {
                 "id": a.id,
-                "tipo": a.tipo,
-                "descripcion": a.descripcion,
-                "cantidad": a.cantidad,
-                "unidad": a.unidad,
-                "total_emision": round(a.total_emision, 2),
-                "fecha": a.fecha
+                "tipo": a.category,
+                "descripcion": a.description,
+                "cantidad": a.quantity,
+                "unidad": a.unit,
+                "total_emision": round(a.emissions, 2),
+                "fecha": a.date
             }
             for a in actividades
         ]

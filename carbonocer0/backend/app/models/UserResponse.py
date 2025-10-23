@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, Float, ForeignKey
-from database import Base
+from app.database import Base
 
 class UserResponse(Base):
     __tablename__ = "user_responses"

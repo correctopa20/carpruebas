@@ -22,4 +22,4 @@ class Activity(Base):
 
 
     def __repr__(self):
-        return f"<Activity(tipo={self.tipo}, cantidad={self.cantidad}, total_emision={self.total_emision})>"
+        return f"<Activity(category={self.category}, quantity={self.quantity}, emissions={self.emissions})>"

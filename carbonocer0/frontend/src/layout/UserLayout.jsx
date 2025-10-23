@@ -11,7 +11,7 @@ export default function UserLayout() {
 
   const links = [
     { label: "Inicio", icon: FaHome, path: "/usuario/inicio" },
-    { label: "Mi Huella", icon: FaChartBar, path: "/usuario/dashboard" },
+    { label: "Dashboard", icon: FaChartBar, path: "/usuario/dashboard" },
     { label: "Recomendaciones", icon: FaLeaf, path: "/usuario/recomendaciones" },
     { label: "Encuestas", icon: FaUserAlt, path: "/usuario/Encuesta" },
     { label: "Configuración", icon: FaCog, path: "/usuario/configuracion" },

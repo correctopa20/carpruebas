@@ -1,8 +1,8 @@
-import Sidebar from "../components/SidebarAdmin";
+import SidebarAdmin from "../components/SidebarAdmin";
 import Navbar from "../components/Navbar";
-import { Outlet, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { logout } from "../services/auth"; // 🟩 Importa logout del servicio
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { logout } from "../services/auth";
 import {
   FaTachometerAlt,
   FaLightbulb,
@@ -10,14 +10,17 @@ import {
   FaUsers,
   FaChartBar,
   FaCog,
+  FaHome
 } from "react-icons/fa";
-import SidebarAdmin from "../components/SidebarAdmin";
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const navigate = useNavigate(); // 🟩 Para redirigir al login después de logout
+  const navigate = useNavigate();
+  const location = useLocation();
+
 
   const links = [
+    { label: "Inicio", icon: FaHome, path: "/admin/inicio" }, // ✅ Corregido - icono y ruta
     { label: "Dashboard", icon: FaTachometerAlt, path: "/admin/dashboard" },
     { label: "Empleados", icon: FaUsers, path: "/admin/empleados" },
     { label: "Actividades / Encuestas", icon: FaListAlt, path: "/admin/actividades" },
@@ -27,9 +30,18 @@ export default function AdminLayout() {
   ];
 
   const handleLogout = () => {
-    logout(); // 🟥 Limpia token y rol
-    navigate("/", { replace: true }); // 🟩 Redirige directamente al login
+    logout();
+    navigate("/login", { replace: true });
   };
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    
+    // Si estamos en /admin sin ruta específica, redirigir al inicio
+    if (currentPath === "/admin" || currentPath === "/admin/") {
+      navigate("/admin/inicio", { replace: true }); // ✅ Cambiado a "inicio"
+    }
+  }, [location, navigate]);
 
   return (
     <div className="flex h-screen bg-[--color-arena]">
@@ -41,7 +53,7 @@ export default function AdminLayout() {
         <Navbar
           title="Panel de Administración"
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-          onLogout={handleLogout} // 🟩 También desde la barra superior
+          onLogout={handleLogout}
         />
         <main className="flex-1 overflow-y-auto p-6">
           <Outlet />

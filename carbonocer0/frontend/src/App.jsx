@@ -34,7 +34,7 @@ function App() {
       {/* ✅ Login público */}
       <Route path="/login" element={<Login />} />
 
-      {/* ✅ Área ADMIN */}
+      {/* ✅ Área ADMIN - Usa AdminRoutes que contiene todas las subrutas */}
       <Route
         path="/admin/*"
         element={
@@ -53,6 +53,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+
       {/* Nueva ruta para la encuesta */}
       <Route
         path="/user/encuesta"
@@ -62,13 +63,14 @@ function App() {
           </ProtectedRoute>
         }
       />
-      {/* ✅ Redirección por defecto */}
+
+      {/* ✅ Redirección por defecto - CORREGIDO */}
       <Route
-        path="*"
+        path="/"
         element={
           isAuthenticated ? (
             <Navigate
-              to={role === "admin" ? "/admin/inicio" : "/usuario/inicio"}
+              to={role === "admin" ? "/admin/dashboard" : "/usuario/inicio"}
               replace
             />
           ) : (
@@ -76,6 +78,9 @@ function App() {
           )
         }
       />
+
+      {/* Ruta catch-all */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

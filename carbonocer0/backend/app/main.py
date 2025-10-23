@@ -9,8 +9,8 @@ from app.routes import (
     report_routes,
     employee_routes,
     recomendation_routes,
-    question_router,      # ✅ Agregar este
-    responses             # ✅ Y este
+    question_router,      
+    responses             
 )
 from app.database import Base, engine
 

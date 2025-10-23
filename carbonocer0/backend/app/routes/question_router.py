@@ -1,41 +1,43 @@
 # app/routes/question_router.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app import models, schemas, database
+from app import database
+from app.models.question import Question
+from app.schemas.question import QuestionCreate, QuestionResponse
 from app.routes.auth_routes import get_current_user
 
 router = APIRouter(prefix="/questions", tags=["Questions"])
 
-@router.post("/", response_model=schemas.QuestionResponse)
+@router.post("/", response_model=QuestionResponse)
 def create_question(
-    question: schemas.QuestionCreate,
+    question: QuestionCreate,
     db: Session = Depends(database.get_db),
     user=Depends(get_current_user)
 ):
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="No autorizado")
-    db_question = models.Question(**question.dict())
+    db_question = Question(**question.dict())
     db.add(db_question)
     db.commit()
     db.refresh(db_question)
     return db_question
 
 
-@router.get("/", response_model=list[schemas.QuestionResponse])
+@router.get("/", response_model=list[QuestionResponse])
 def get_questions(db: Session = Depends(database.get_db)):
-    return db.query(models.Question).all()
+    return db.query(Question).all()
 
 
-@router.put("/{question_id}", response_model=schemas.QuestionResponse)
+@router.put("/{question_id}", response_model=QuestionResponse)
 def update_question(
     question_id: int,
-    updated: schemas.QuestionCreate,
+    updated: QuestionCreate,
     db: Session = Depends(database.get_db),
     user=Depends(get_current_user)
 ):
     if user.role != "admin":
         raise HTTPException(status_code=403, detail="No autorizado")
-    question = db.query(models.Question).filter(models.Question.id == question_id).first()
+    question = db.query(Question).filter(Question.id == question_id).first()
     if not question:
         raise HTTPException(status_code=404, detail="Pregunta no encontrada")
 
@@ -54,7 +56,7 @@ def delete_question(
 ):
     if user.role != "admin":
         raise HTTPException(status_code=403, detail="No autorizado")
-    question = db.query(models.Question).filter(models.Question.id == question_id).first()
+    question = db.query(Question).filter(Question.id == question_id).first()
     if not question:
         raise HTTPException(status_code=404, detail="Pregunta no encontrada")
     db.delete(question)
