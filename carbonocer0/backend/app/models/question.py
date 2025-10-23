@@ -1,5 +1,5 @@
-# models/question.py
-from sqlalchemy import Column, Integer, String, ForeignKey
+# app/models/question.py
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -10,6 +10,7 @@ class Question(Base):
     text = Column(String, nullable=False)
     category = Column(String, nullable=False)
     unit = Column(String, nullable=False)
-    emission_factor_id = Column(Integer, ForeignKey("emission_factors.id"))
+    factor = Column(Float, nullable=False)  # ✅ AGREGADO
+    emission_factor_id = Column(Integer, ForeignKey("emission_factors.id"), nullable=True)
 
-    emission_factor = relationship("EmissionFactor", back_populates="questions")
+    emission_factor = relationship("EmissionFactor", back_populates="questions", lazy="joined")

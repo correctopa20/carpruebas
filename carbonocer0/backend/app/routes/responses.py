@@ -1,8 +1,9 @@
+# app/routes/responses.py
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from models import UserResponse, Question
-from schemas import UserResponseCreate, UserResponseOut
-from database import get_db
+from app.models import UserResponse, Question
+from app.schemas import UserResponseCreate, UserResponseOut
+from app.database import get_db
 from typing import List
 
 router = APIRouter(prefix="/responses", tags=["Responses"])
@@ -12,10 +13,13 @@ def submit_responses(responses: List[UserResponseCreate], db: Session = Depends(
     results = []
     for r in responses:
         question = db.query(Question).filter(Question.id == r.question_id).first()
-        emission = r.value * question.factor
+        if not question:
+            continue
+
+        emission = r.value * question.factor  # ⚙️ Cálculo de emisiones
 
         new_response = UserResponse(
-            user_id=1,  # ⚠️ luego se obtiene del token JWT
+            user_id=1,  # ⚠️ Luego obtendrás esto del token JWT
             question_id=r.question_id,
             value=r.value,
             emission=emission,

@@ -1,11 +1,8 @@
-# routers/question_router.py
-from fastapi import APIRouter, Depends, HTTPException  # 👈 agrega HTTPException aquí
+# app/routes/question_router.py
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import models, schemas, database
 from app.routes.auth_routes import get_current_user
-
-router = APIRouter(prefix="/questions", tags=["Questions"])
-
 
 router = APIRouter(prefix="/questions", tags=["Questions"])
 
@@ -23,9 +20,11 @@ def create_question(
     db.refresh(db_question)
     return db_question
 
+
 @router.get("/", response_model=list[schemas.QuestionResponse])
 def get_questions(db: Session = Depends(database.get_db)):
     return db.query(models.Question).all()
+
 
 @router.put("/{question_id}", response_model=schemas.QuestionResponse)
 def update_question(
@@ -45,6 +44,7 @@ def update_question(
     db.commit()
     db.refresh(question)
     return question
+
 
 @router.delete("/{question_id}")
 def delete_question(

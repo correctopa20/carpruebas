@@ -8,7 +8,9 @@ from app.routes import (
     emission_factor_routes,
     report_routes,
     employee_routes,
-    recomendation_routes
+    recomendation_routes,
+    question_router,      # ✅ Agregar este
+    responses             # ✅ Y este
 )
 from app.database import Base, engine
 
@@ -21,13 +23,15 @@ app = FastAPI(
 
 # 🔧 Crear tablas
 Base.metadata.create_all(bind=engine)
+
+# 🟢 CORS
 origins = [
     "http://localhost:5173",  # Vite/React
     "http://127.0.0.1:5173",
     "http://localhost:8000",  # Swagger
     "http://127.0.0.1:8000",
 ]
-# 🟢 CORS
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -44,6 +48,11 @@ app.include_router(emission_factor_routes.router)
 app.include_router(report_routes.router)
 app.include_router(employee_routes.router)
 app.include_router(recomendation_routes.router)
+
+# ✅ Nuevos endpoints dinámicos
+app.include_router(question_router.router)
+app.include_router(responses.router)
+
 # 🧩 Configuración OpenAPI (para JWT persistente)
 def custom_openapi():
     if app.openapi_schema:
