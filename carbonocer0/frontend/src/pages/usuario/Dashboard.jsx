@@ -109,7 +109,7 @@ export default function MiHuella() {
   }
 
   // Mostrar información de debug temporalmente (puedes quitarlo después)
-  const showDebugPanel = true;
+  const showDebugPanel = false;
 
   if (error) {
     console.log("❌ Mostrando pantalla de error:", error);
@@ -157,10 +157,14 @@ export default function MiHuella() {
     );
   }
 
-  if (!footprintData || !footprintData.categories || Object.keys(footprintData.categories).length === 0) {
+  if (!footprintData || !footprintData.categories || 
+    typeof footprintData.categories !== 'object' || 
+    Object.keys(footprintData.categories).length === 0) {
+    
     console.log("📭 Mostrando pantalla 'sin encuesta'", {
-      footprintData,
-      hasCategories: footprintData?.categories ? Object.keys(footprintData.categories).length : 0
+        footprintData,
+        categoriesType: typeof footprintData?.categories,
+        categoriesKeys: footprintData?.categories ? Object.keys(footprintData.categories) : 'no categories'
     });
     return (
       <div className="space-y-6 p-6">
@@ -186,17 +190,40 @@ export default function MiHuella() {
     );
   }
 
-  // ✅ MOSTRAR DATOS SI TODO ESTÁ BIEN
+  // ✅ MOVER LA DESTRUCTURACIÓN AQUÍ - DESPUÉS de verificar que los datos existen
   console.log("🎉 Mostrando datos de huella:", footprintData);
   const { categories, total_emissions, breakdown, total_responses, average_emission } = footprintData;
 
+  // Validaciones adicionales para seguridad
+  if (!categories || typeof categories !== 'object') {
+    console.error("❌ categories no es un objeto válido:", categories);
+    return (
+      <div className="text-center py-8">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">Error en los datos</h2>
+        <p className="text-gray-600">Los datos de categorías no son válidos</p>
+      </div>
+    );
+  }
+
+  const categoryKeys = Object.keys(categories);
+  const categoryValues = Object.values(categories);
+
+  if (categoryKeys.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">No hay datos para mostrar</h2>
+        <p className="text-gray-600">No se encontraron datos de categorías</p>
+      </div>
+    );
+  }
+
   // Datos para gráficos
   const barData = {
-    labels: Object.keys(categories),
+    labels: categoryKeys,
     datasets: [
       {
         label: "Emisiones por categoría (kg CO₂)",
-        data: Object.values(categories),
+        data: categoryValues,
         backgroundColor: "rgba(59, 130, 246, 0.7)",
         borderColor: "rgba(37, 99, 235, 1)",
         borderWidth: 2,
@@ -206,10 +233,10 @@ export default function MiHuella() {
   };
 
   const doughnutData = {
-    labels: breakdown.map(item => item.category),
+    labels: breakdown?.map(item => item.category) || [],
     datasets: [
       {
-        data: breakdown.map(item => item.emissions),
+        data: breakdown?.map(item => item.emissions) || [],
         backgroundColor: [
           "#22c55e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6",
           "#06b6d4", "#84cc16", "#f97316", "#ec4899", "#14b8a6"
@@ -326,7 +353,7 @@ export default function MiHuella() {
       <div className="bg-white p-6 rounded-2xl shadow-lg">
         <h3 className="text-xl font-semibold mb-4">📊 Desglose Detallado</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {breakdown.map((item, index) => (
+          {(breakdown || []).map((item, index) => (
             <div key={index} className="border rounded-lg p-4 bg-gray-50">
               <h4 className="font-semibold text-gray-800 capitalize">{item.category}</h4>
               <p className="text-2xl font-bold text-blue-600">{item.emissions} kg CO₂</p>

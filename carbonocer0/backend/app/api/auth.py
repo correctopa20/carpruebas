@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 import jwt
 from app.database import get_db  # Ajusta el import según tu estructura
-from app.models import User  # Tu modelo de usuario
+from app.models.user_model import User  # Tu modelo de usuario
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
 SECRET_KEY = "superclave"
@@ -29,10 +29,11 @@ def login(data: LoginData, db: Session = Depends(get_db)):
     if not pwd_context.verify(data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Contraseña incorrecta")
 
-    # Generar token JWT
+    # ✅ CORREGIR: Cambiar "rol" por "role" para ser consistente
     token = jwt.encode({
         "sub": user.email,
-        "rol": user.role,
+        "role": user.role,  # ← CAMBIAR "rol" por "role"
+        "user_id": user.id,  # ← AGREGAR user_id (IMPORTANTE)
         "exp": datetime.utcnow() + timedelta(hours=2)
     }, SECRET_KEY, algorithm=ALGORITHM)
 

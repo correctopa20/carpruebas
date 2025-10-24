@@ -1,3 +1,4 @@
+# Bibliotecas principales de FastAPI
 fastapi
 uvicorn
 sqlalchemy
@@ -8,3 +9,6 @@ jwt
 python-dotenv
 passlib[bcrypt]
 email-validator
+
+# 🆕 Bibliotecas para generar PDFs (ReportLab)
+reportlab

@@ -3,14 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from app.routes import (
     auth_routes,
-    admin_routes,
+    admin_dashboard,
     activity_routes,
     emission_factor_routes,
     report_routes,
     employee_routes,
     recomendation_routes,
     question_router,      
-    responses             
+    responses, 
+    user_footprint,
+    admin_reports             
 )
 from app.database import Base, engine
 
@@ -42,16 +44,16 @@ app.add_middleware(
 
 # 🧱 Incluir rutas
 app.include_router(auth_routes.router, prefix="/auth")
-app.include_router(admin_routes.router)
+app.include_router(admin_dashboard.router)
 app.include_router(activity_routes.router)
 app.include_router(emission_factor_routes.router)
 app.include_router(report_routes.router)
 app.include_router(employee_routes.router)
 app.include_router(recomendation_routes.router)
-
-# ✅ Nuevos endpoints dinámicos
 app.include_router(question_router.router)
 app.include_router(responses.router)
+app.include_router(user_footprint.router)
+app.include_router(admin_reports.router)
 
 # 🧩 Configuración OpenAPI (para JWT persistente)
 def custom_openapi():

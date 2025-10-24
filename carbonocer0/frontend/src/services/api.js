@@ -18,23 +18,40 @@ api.interceptors.request.use(
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log("🔐 Token agregado a headers:", token.substring(0, 30) + "...");
+    } else {
+      console.log("❌ No hay token en localStorage");
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// ✅ Interceptor opcional para manejar errores globales
+// ✅ Interceptor MODIFICADO para debuggear el error 401
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log("✅ Respuesta exitosa:", response.config.url);
+    return response;
+  },
   (error) => {
+    console.log("=== 🚨 ERROR INTERCEPTADO ===");
+    console.log("URL:", error.config?.url);
+    console.log("Status:", error.response?.status);
+    console.log("Data:", error.response?.data);
+    console.log("Headers enviados:", error.config?.headers);
+    console.log("Token en localStorage:", localStorage.getItem("token"));
+    
     if (error.response?.status === 401) {
-      // Si el token expiró o no es válido
-      console.warn("Sesión expirada. Redirigiendo al login...");
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-      window.location.href = "/"; // redirige al login
+      console.log("🔐 Error 401 DETECTADO - Pero NO redirigiendo automáticamente");
+      console.log("Mensaje del backend:", error.response?.data?.detail);
+      
+      // ❌ COMENTA TEMPORALMENTE LA REDIRECCIÓN PARA DEBUGGEAR
+      // console.warn("Sesión expirada. Redirigiendo al login...");
+      // localStorage.removeItem("token");
+      // localStorage.removeItem("role");
+      // window.location.href = "/"; // redirige al login
     }
+    
     return Promise.reject(error);
   }
 );

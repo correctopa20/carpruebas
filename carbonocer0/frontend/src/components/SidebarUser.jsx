@@ -2,10 +2,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { FaSignOutAlt } from "react-icons/fa";
 import {
   Home,
-  LayoutDashboard,
   ClipboardList,
   BarChart2,
-  LogOut,
 } from "lucide-react";
 import PropTypes from "prop-types";
 
@@ -28,7 +26,7 @@ export default function SidebarUser({ links }) {
   const menuLinks = links && links.length > 0 ? links : defaultLinks;
 
   return (
-    <aside className="w-64 bg-[--color-verde-oscuro] text-white flex flex-col justify-between shadow-lg">
+    <aside className="w-64 bg-green-800 text-white flex flex-col justify-between shadow-lg">
       <nav className="p-4">
         <h2 className="text-xl font-bold mb-6 text-center">CarbonoCer0 🌱</h2>
 
@@ -40,8 +38,8 @@ export default function SidebarUser({ links }) {
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive
-                      ? "bg-[--color-verde-claro] text-black"
-                      : "hover:bg-[--color-verde-claro]/30"
+                      ? "bg-green-500 text-black"
+                      : "hover:bg-green-700/30"
                   }`
                 }
               >

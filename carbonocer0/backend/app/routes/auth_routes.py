@@ -91,13 +91,40 @@ def login(data: LoginSchema):
         db.close()
 
 
-# 🟨 OBTENER USUARIO ACTUAL DESDE EL TOKEN
+# 🟨 OBTENER USUARIO ACTUAL DESDE EL TOKEN (VERSIÓN COMPATIBLE)
 def get_current_user(request: Request):
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
     payload = verify_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Token inválido o expirado")
-    return payload
+    
+    # ✅ COMPATIBILIDAD: Manejar tanto "rol" como "role"
+    role = payload.get("role") or payload.get("rol")  # ← Manejar ambos casos
+    user_id = payload.get("user_id")
+    email = payload.get("sub")
+    
+    if not email:
+        raise HTTPException(status_code=401, detail="Token inválido: no contiene email")
+    
+    if not role:
+        raise HTTPException(status_code=401, detail="Token inválido: no contiene rol")
+    
+    # Si no hay user_id en el token, buscar en la BD
+    if not user_id:
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.email == email).first()
+            if not user:
+                raise HTTPException(status_code=401, detail="Usuario no encontrado")
+            user_id = user.id
+        finally:
+            db.close()
+    
+    return {
+        "id": user_id,
+        "email": email,
+        "role": role
+    }
 
 
 

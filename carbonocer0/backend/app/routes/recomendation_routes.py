@@ -3,12 +3,12 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
-
 from app.database import SessionLocal
 from app.models.recomendation_model import Recommendation
 from app.models.user_model import User
 from app.dependencies.roles_dependency import admin_required
 from app.routes.auth_routes import get_current_user
+from app.routes.responses import UserResponse
 
 router = APIRouter(prefix="/recommendations", tags=["Recommendations"])
 
@@ -83,12 +83,14 @@ def get_personal_recommendations(
     from app.models.activity_model import Activity
     from sqlalchemy import func
 
-    total_emision = (
-        db.query(func.sum(Activity.total_emision))
-        .filter(Activity.user_id == user_id)
+    total_emision_result = (
+        db.query(func.sum(UserResponse.emission))
+        .filter(UserResponse.user_id == user_id)
         .scalar()
-        or 0
     )
+    total_emision = float(total_emision_result) if total_emision_result else 0.0
+
+    print(f"📊 [RECOMENDACIONES] Huella total calculada: {total_emision} kg CO₂")
 
     # 🔹 Reglas simples de recomendación
     if total_emision < 100:
