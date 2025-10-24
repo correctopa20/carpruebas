@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import api from "../../services/api";
 import Card from "../../components/Card";
-import { useNavigate } from "react-router-dom"; // ✅ AGREGADO
+import { useNavigate } from "react-router-dom";
 
 ChartJS.register(
   BarElement,
@@ -27,53 +27,167 @@ ChartJS.register(
 export default function MiHuella() {
   const [footprintData, setFootprintData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // ✅ AGREGADO
+  const [debugInfo, setDebugInfo] = useState("");
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("🚀 MiHuella component mounted");
     cargarHuella();
   }, []);
 
   const cargarHuella = async () => {
     try {
+      setDebugInfo("🔄 Iniciando carga de huella...");
+      console.log("🔄 Haciendo petición GET a /users/my-footprint");
+      
+      const token = localStorage.getItem("token");
+      console.log("🔑 Token en localStorage:", token ? "✅ Existe" : "❌ No existe");
+      
       const response = await api.get("/users/my-footprint");
+      console.log("✅ Respuesta recibida del backend:", response);
+      console.log("📊 Datos de la respuesta:", response.data);
+      
+      setDebugInfo(`✅ Respuesta exitosa. Datos: ${JSON.stringify(response.data).substring(0, 150)}...`);
       setFootprintData(response.data);
+      setError(null);
+      
     } catch (error) {
-      console.error("Error cargando huella:", error);
-      // Si el error es 404, significa que no tiene encuesta completada
+      console.error("❌ ERROR en cargarHuella:", error);
+      console.log("📋 Detalles completos del error:", {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers
+        }
+      });
+      
+      const errorMsg = `❌ Error ${error.response?.status || "sin status"}: ${error.response?.data?.detail || error.message || "Error desconocido"}`;
+      setDebugInfo(errorMsg);
+      setError(errorMsg);
+      
       if (error.response?.status === 404) {
+        console.log("📭 Error 404 - Usuario no encontrado o sin encuesta");
+        setFootprintData(null);
+      } else if (error.response?.status === 401) {
+        console.log("🔐 Error 401 - No autorizado, token inválido");
+        setFootprintData(null);
+      } else if (error.response?.status === 500) {
+        console.log("💥 Error 500 - Error interno del servidor");
         setFootprintData(null);
       }
     } finally {
+      console.log("🏁 Finalizando carga de huella");
       setLoading(false);
     }
   };
 
+  // Debug: mostrar estado actual
+  console.log("📊 Estado actual:", {
+    loading,
+    footprintData,
+    debugInfo,
+    error,
+    hasCategories: footprintData?.categories ? Object.keys(footprintData.categories).length : 0
+  });
+
   if (loading) {
+    console.log("⏳ Mostrando loading...");
     return (
       <div className="flex justify-center items-center h-64">
         <div className="text-center">
           <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando tu huella de carbono...</p>
+          {debugInfo && <p className="text-sm text-gray-500 mt-2">{debugInfo}</p>}
+        </div>
+      </div>
+    );
+  }
+
+  // Mostrar información de debug temporalmente (puedes quitarlo después)
+  const showDebugPanel = true;
+
+  if (error) {
+    console.log("❌ Mostrando pantalla de error:", error);
+    return (
+      <div className="space-y-6 p-6">
+        {showDebugPanel && (
+          <div className="bg-yellow-100 border border-yellow-400 p-4 rounded-lg">
+            <h3 className="font-bold text-yellow-800">🔍 PANEL DE DEBUG</h3>
+            <p className="text-yellow-700">{debugInfo}</p>
+            <button 
+              onClick={() => {
+                console.clear();
+                cargarHuella();
+              }}
+              className="bg-yellow-500 text-white px-4 py-2 rounded mt-2"
+            >
+              Recargar y limpiar consola
+            </button>
+          </div>
+        )}
+        
+        <div className="text-center py-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">🌍 Error al cargar tu huella</h2>
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <p className="font-bold">Error:</p>
+            <p>{error}</p>
+          </div>
+          <p className="text-gray-600 mb-6">No se pudieron cargar tus datos de huella de carbono</p>
+          <div className="space-x-4">
+            <button 
+              onClick={() => navigate("/usuario/encuesta")}
+              className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600"
+            >
+              Realizar Encuesta
+            </button>
+            <button 
+              onClick={cargarHuella}
+              className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600"
+            >
+              Reintentar
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   if (!footprintData || !footprintData.categories || Object.keys(footprintData.categories).length === 0) {
+    console.log("📭 Mostrando pantalla 'sin encuesta'", {
+      footprintData,
+      hasCategories: footprintData?.categories ? Object.keys(footprintData.categories).length : 0
+    });
     return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">🌍 Tu Huella de Carbono</h2>
-        <p className="text-gray-600 mb-6">Aún no has completado la encuesta de huella de carbono</p>
-        <button 
-          onClick={() => navigate("/usuario/encuesta")} // ✅ CORREGIDO
-          className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition duration-200"
-        >
-          Realizar Encuesta
-        </button>
+      <div className="space-y-6 p-6">
+        {showDebugPanel && (
+          <div className="bg-blue-100 border border-blue-400 p-4 rounded-lg">
+            <h3 className="font-bold text-blue-800">🔍 PANEL DE DEBUG</h3>
+            <p className="text-blue-700">{debugInfo}</p>
+            <p className="text-blue-700">footprintData: {JSON.stringify(footprintData)}</p>
+          </div>
+        )}
+        
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">🌍 Tu Huella de Carbono</h2>
+          <p className="text-gray-600 mb-6">Aún no has completado la encuesta de huella de carbono</p>
+          <button 
+            onClick={() => navigate("/usuario/encuesta")}
+            className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition duration-200"
+          >
+            Realizar Encuesta
+          </button>
+        </div>
       </div>
     );
   }
 
+  // ✅ MOSTRAR DATOS SI TODO ESTÁ BIEN
+  console.log("🎉 Mostrando datos de huella:", footprintData);
   const { categories, total_emissions, breakdown, total_responses, average_emission } = footprintData;
 
   // Datos para gráficos
@@ -108,22 +222,22 @@ export default function MiHuella() {
 
   // Recomendaciones basadas en categorías
   const recomendaciones = {
-    "transporte": [ // ✅ CORREGIDO: minúscula para coincidir con tu BD
+    "transporte": [
       "🚗 Usa transporte público o comparte vehículo",
       "🚲 Considera la bicicleta para distancias cortas",
       "✈️ Reduce viajes en avión cuando sea posible"
     ],
-    "energia": [ // ✅ CORREGIDO
+    "energia": [
       "💡 Usa bombillas LED y apaga luces innecesarias",
       "🔌 Desconecta electrodomésticos en standby",
       "☀️ Aprovecha la luz natural"
     ],
-    "alimentacion": [ // ✅ CORREGIDO
+    "alimentacion": [
       "🥦 Consume más alimentos locales y de temporada",
       "🍖 Reduce el consumo de carne roja",
       "🚯 Evita el desperdicio de alimentos"
     ],
-    "hogar": [ // ✅ CORREGIDO
+    "hogar": [
       "🏠 Mejora el aislamiento de tu vivienda",
       "🌡️ Regula la temperatura de forma eficiente",
       "💧 Reduce el consumo de agua caliente"
@@ -132,6 +246,14 @@ export default function MiHuella() {
 
   return (
     <div className="space-y-8 p-6">
+      {showDebugPanel && (
+        <div className="bg-green-100 border border-green-400 p-4 rounded-lg">
+          <h3 className="font-bold text-green-800">🔍 PANEL DE DEBUG - DATOS CARGADOS</h3>
+          <p className="text-green-700">{debugInfo}</p>
+          <p className="text-green-700">Total emisiones: {total_emissions} | Respuestas: {total_responses}</p>
+        </div>
+      )}
+
       {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-800">🌍 Tu Huella de Carbono</h1>
@@ -236,7 +358,7 @@ export default function MiHuella() {
       {/* Acciones */}
       <div className="text-center">
         <button 
-          onClick={() => navigate("/usuario/encuesta")} // ✅ CORREGIDO
+          onClick={() => navigate("/usuario/encuesta")}
           className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 mr-4 transition duration-200"
         >
           🔄 Actualizar Encuesta
